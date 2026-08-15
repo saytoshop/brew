@@ -2,7 +2,7 @@
 
 @section('title', 'Оборудование')
 @section('content')
-<div class="stack" id="equipment-app">
+<div class="stack" id="equipment-app" v-cloak>
     <div class="page-head">
         <div>
             <h1>Оборудование</h1>

@@ -2,7 +2,7 @@
 
 @section('title', 'Склад')
 @section('content')
-<div class="stack" id="stock-app">
+<div class="stack" id="stock-app" v-cloak>
     <div class="page-head">
         <div>
             <h1>Склад</h1>
@@ -62,7 +62,7 @@
     </div>
 
     <!-- Модалка приёмки -->
-    <div class="modal-overlay" v-if="intakeOpen" @click.self="intakeOpen = false">
+    <div class="modal-overlay" v-if="intakeOpen" @click.self="intakeOpen = false" v-cloak>
         <div class="modal">
             <div class="modal-head">
                 <div class="modal-title">Приёмка ингредиента</div>
