@@ -237,3 +237,6 @@ textarea.input { resize: vertical; min-height: 84px; }
   .settings-grid { grid-template-columns: 1fr; }
   .tbl { display: block; overflow-x: auto; }
 }
+
+/* v-cloak: скрывает Vue-шаблоны до инициализации */
+[v-cloak] { display: none; }

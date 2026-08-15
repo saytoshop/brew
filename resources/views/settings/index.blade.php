@@ -2,7 +2,7 @@
 
 @section('title', 'Настройки')
 @section('content')
-<div class="stack" id="settings-app">
+<div class="stack" id="settings-app" v-cloak>
     <div class="page-head">
         <div>
             <h1>Настройки</h1>
@@ -55,7 +55,7 @@
     </div>
 
     <!-- Модалка импорта -->
-    <div class="modal-overlay" v-if="showImportModal" @click.self="showImportModal = false">
+    <div class="modal-overlay" v-if="showImportModal" @click.self="showImportModal = false" v-cloak>
         <div class="modal">
             <div class="modal-head">
                 <div class="modal-title">Импорт базы данных</div>

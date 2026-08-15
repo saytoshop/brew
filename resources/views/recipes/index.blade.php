@@ -2,7 +2,7 @@
 
 @section('title', 'Рецепты')
 @section('content')
-<div class="stack" id="recipes-app">
+<div class="stack" id="recipes-app" v-cloak>
     <div class="page-head">
         <div>
             <h1>Рецепты</h1>
@@ -18,7 +18,7 @@
                     <span class="recipe-emoji">🍺</span>
                     <div class="recipe-name-wrap">
                         <div class="recipe-name">@{{ r.name }}</div>
-                        <span class="recipe-brews-badge">🔥 <b>@{{ r.brews_count }}</b> @{{ plural(r.brews_count, ['варка', 'варки', 'варок']) }}</span>
+                        <span class="recipe-brews-badge">🔥 <b>@{{ r.brews_count }}</b> @{{ plural(r.brews_count) }}</span>
                     </div>
                 </div>
                 <a :href="'/recipes/' + r.id + '/edit'" class="btn btn-outline btn-sm">✏️</a>
@@ -39,7 +39,8 @@ createApp({
     setup() {
         const recipes = ref([]);
 
-        const plural = (n, forms) => {
+        const plural = (n) => {
+            const forms = ['варка', 'варки', 'варок'];
             const n1 = Math.abs(n) % 100;
             const n2 = n1 % 10;
             if (n1 > 10 && n1 < 20) return forms[2];
