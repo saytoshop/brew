@@ -17,13 +17,13 @@
                 <div class="recipe-header-left">
                     <span class="recipe-emoji">🍺</span>
                     <div class="recipe-name-wrap">
-                        <div class="recipe-name">{{ r.name }}</div>
-                        <span class="recipe-brews-badge">🔥 <b>{{ r.brews_count }}</b> {{ plural(r.brews_count, ['варка', 'варки', 'варок']) }}</span>
+                        <div class="recipe-name">@{{ r.name }}</div>
+                        <span class="recipe-brews-badge">🔥 <b>@{{ r.brews_count }}</b> @{{ plural(r.brews_count, ['варка', 'варки', 'варок']) }}</span>
                     </div>
                 </div>
                 <a :href="'/recipes/' + r.id + '/edit'" class="btn btn-outline btn-sm">✏️</a>
             </div>
-            <div style="font-size: 12px; color: #6b7280;">{{ r.ingredients_count }} ингредиентов</div>
+            <div style="font-size: 12px; color: #6b7280;">@{{ r.ingredients_count }} ингредиентов</div>
             <a :href="'/recipes/' + r.id" class="btn btn-outline btn-sm" style="width: 100%">Открыть рецепт</a>
         </div>
         <div v-if="recipes.length === 0" class="card card-pad" style="text-align: center; color: #6b7280;">

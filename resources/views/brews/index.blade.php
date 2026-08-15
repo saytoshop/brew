@@ -24,16 +24,16 @@
             </thead>
             <tbody>
                 <tr v-for="b in brews" :key="b.id">
-                    <td>{{ formatDate(b.created_at) }}</td>
+                    <td>@{{ formatDate(b.created_at) }}</td>
                     <td>
                         <template v-if="b.is_modified">
                             <span class="badge badge-amber">🔧 Модифицирована</span>
-                            <div class="cell-sub">{{ b.recipe_name || 'Без рецепта' }}</div>
+                            <div class="cell-sub">@{{ b.recipe_name || 'Без рецепта' }}</div>
                         </template>
-                        <template v-else>{{ b.recipe_name || 'Без рецепта' }}</template>
+                        <template v-else>@{{ b.recipe_name || 'Без рецепта' }}</template>
                     </td>
-                    <td class="num">{{ b.volume_actual || '—' }}</td>
-                    <td class="num">{{ formatCost(b.cost_per_liter) }}</td>
+                    <td class="num">@{{ b.volume_actual || '—' }}</td>
+                    <td class="num">@{{ formatCost(b.cost_per_liter) }}</td>
                     <td>
                         <div class="actions-cell">
                             <a :href="'/brews/' + b.id" class="btn btn-outline btn-sm">Открыть</a>
