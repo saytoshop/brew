@@ -23,9 +23,9 @@
             </thead>
             <tbody>
                 <tr v-for="item in items" :key="item.id">
-                    <td>{{ item.name }}</td>
-                    <td class="num">{{ formatPrice(item.price) }}</td>
-                    <td class="num">{{ formatDate(item.purchase_date) }}</td>
+                    <td>@{{ item.name }}</td>
+                    <td class="num">@{{ formatPrice(item.price) }}</td>
+                    <td class="num">@{{ formatDate(item.purchase_date) }}</td>
                     <td>
                         <div class="actions-cell">
                             <button class="icon-btn" title="Редактировать" @click="openEditModal(item)">✏️</button>

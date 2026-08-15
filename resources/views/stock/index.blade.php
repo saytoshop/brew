@@ -17,9 +17,9 @@
             <span class="forecast-title">Прогноз:</span>
             <div class="forecast-items">
                 <div class="forecast-item" v-for="f in forecast" :key="f.ingredient_name">
-                    <span class="forecast-emoji">{{ f.emoji }}</span>
-                    <span class="forecast-val">{{ f.varoks }} варок</span>
-                    <span class="forecast-name">{{ f.name }}</span>
+                    <span class="forecast-emoji">@{{ f.emoji }}</span>
+                    <span class="forecast-val">@{{ f.varoks }} варок</span>
+                    <span class="forecast-name">@{{ f.name }}</span>
                 </div>
             </div>
         </div>
@@ -42,13 +42,13 @@
             </thead>
             <tbody>
                 <template v-for="group in groupedStock" :key="group.category">
-                    <tr class="group-row"><td colspan="5">{{ group.category }}</td></tr>
+                    <tr class="group-row"><td colspan="5">@{{ group.category }}</td></tr>
                     <tr v-for="item in group.items" :key="item.ingredient_id">
-                        <td>{{ item.ingredient_name }}</td>
-                        <td>{{ item.category }}</td>
-                        <td class="num">{{ item.total_quantity }} {{ item.unit }}</td>
-                        <td class="num">{{ formatPrice(item.avg_price) }}</td>
-                        <td class="num">{{ item.old_batch_age_months }}</td>
+                        <td>@{{ item.ingredient_name }}</td>
+                        <td>@{{ item.category }}</td>
+                        <td class="num">@{{ item.total_quantity }} @{{ item.unit }}</td>
+                        <td class="num">@{{ formatPrice(item.avg_price) }}</td>
+                        <td class="num">@{{ item.old_batch_age_months }}</td>
                     </tr>
                 </template>
                 <tr v-if="stock.length === 0">
@@ -73,7 +73,7 @@
                     <label>Ингредиент</label>
                     <select class="input" v-model="intake.ingredient_id">
                         <option value="" disabled>Выберите…</option>
-                        <option v-for="ing in ingredients" :key="ing.id" :value="ing.id">{{ ing.name }} ({{ ing.category_name }}, {{ ing.unit_name }})</option>
+                        <option v-for="ing in ingredients" :key="ing.id" :value="ing.id">@{{ ing.name }} (@{{ ing.category_name }}, @{{ ing.unit_name }})</option>
                     </select>
                 </div>
                 <div class="field">
