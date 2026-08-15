@@ -44,7 +44,7 @@
     <div class="modal-overlay" v-if="modalOpen" @click.self="closeModal">
         <div class="modal">
             <div class="modal-head">
-                <div class="modal-title">{{ isEditing ? 'Редактирование' : 'Новое оборудование' }}</div>
+                <div class="modal-title">@{{ isEditing ? 'Редактирование' : 'Новое оборудование' }}</div>
                 <button class="modal-close" @click="closeModal">✕</button>
             </div>
             <div class="modal-body">
