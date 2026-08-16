@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Recipe;
+use App\Models\Ingredient;
+use App\Models\Unit;
 use Illuminate\View\View;
 
 class RecipeController extends Controller
@@ -27,11 +29,18 @@ class RecipeController extends Controller
 
     public function create(): View
     {
-        return view('recipes.create');
+        $ingredientsList = Ingredient::with('category')->orderBy('name')->get();
+        $units = Unit::all();
+        
+        return view('recipes.create', compact('ingredientsList', 'units'));
     }
 
     public function edit(Recipe $recipe): View
     {
-        return view('recipes.edit', compact('recipe'));
+        $recipe->load('recipeIngredients');
+        $ingredientsList = Ingredient::with('category')->orderBy('name')->get();
+        $units = Unit::all();
+        
+        return view('recipes.edit', compact('recipe', 'ingredientsList', 'units'));
     }
 }
