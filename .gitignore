@@ -41,4 +41,24 @@ htmlcov/
 dist/
 build/
 target/
+.gradle/
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+.Pytest_cache/
+
+# PHP specific
+*.php~
+*.php.bak
+*.php.swp
+vendor/composer/installed.json
+
+# Laravel specific (if applicable)
+storage/
+bootstrap/cache/
 ```

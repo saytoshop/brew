@@ -26,48 +26,48 @@ Route::post('/settings/import', [SettingController::class, 'import'])->name('set
 
 // API routes (JSON responses for Vue components)
 // Categories
-Route::get('/v1/categories', [CategoryController::class, 'index']);
-Route::get('/v1/categories/{category}', [CategoryController::class, 'show']);
+Route::get('/v1/categories', [CategoryController::class, 'data']);
+Route::get('/v1/categories/{category}', [CategoryController::class, 'showData']);
 Route::post('/v1/categories', [CategoryController::class, 'store']);
 Route::put('/v1/categories/{category}', [CategoryController::class, 'update']);
 Route::delete('/v1/categories/{category}', [CategoryController::class, 'destroy']);
 
 // Units
-Route::get('/v1/units', [UnitController::class, 'index']);
-Route::get('/v1/units/{unit}', [UnitController::class, 'show']);
+Route::get('/v1/units', [UnitController::class, 'data']);
+Route::get('/v1/units/{unit}', [UnitController::class, 'showData']);
 Route::post('/v1/units', [UnitController::class, 'store']);
 Route::put('/v1/units/{unit}', [UnitController::class, 'update']);
 Route::delete('/v1/units/{unit}', [UnitController::class, 'destroy']);
 
 // Ingredients
-Route::get('/v1/ingredients', [IngredientController::class, 'index']);
-Route::get('/v1/ingredients/{ingredient}', [IngredientController::class, 'show']);
+Route::get('/v1/ingredients', [IngredientController::class, 'data']);
+Route::get('/v1/ingredients/{ingredient}', [IngredientController::class, 'showData']);
 Route::post('/v1/ingredients', [IngredientController::class, 'store']);
 Route::put('/v1/ingredients/{ingredient}', [IngredientController::class, 'update']);
 Route::delete('/v1/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 
 // Equipment
-Route::get('/v1/equipment', [EquipmentController::class, 'index']);
+Route::get('/v1/equipment', [EquipmentController::class, 'data']);
 Route::get('/v1/equipment/{equipment}', [EquipmentController::class, 'show']);
 Route::post('/v1/equipment', [EquipmentController::class, 'store']);
 Route::put('/v1/equipment/{equipment}', [EquipmentController::class, 'update']);
 Route::delete('/v1/equipment/{equipment}', [EquipmentController::class, 'destroy']);
 
 // Stock
-Route::get('/v1/stock', [StockController::class, 'index']);
+Route::get('/v1/stock', [StockController::class, 'data']);
 Route::post('/v1/stock/receipts', [StockController::class, 'receipt']);
 Route::get('/v1/stock/forecast', [StockController::class, 'forecast']);
 
 // Recipes
-Route::get('/v1/recipes', [RecipeController::class, 'index']);
-Route::get('/v1/recipes/{recipe}', [RecipeController::class, 'show']);
+Route::get('/v1/recipes', [RecipeController::class, 'data']);
+Route::get('/v1/recipes/{recipe}', [RecipeController::class, 'showData']);
 Route::post('/v1/recipes', [RecipeController::class, 'store']);
 Route::put('/v1/recipes/{recipe}', [RecipeController::class, 'update']);
 Route::delete('/v1/recipes/{recipe}', [RecipeController::class, 'destroy']);
 
 // Brews
-Route::get('/v1/brews', [BrewController::class, 'index']);
-Route::get('/v1/brews/{brew}', [BrewController::class, 'show']);
+Route::get('/v1/brews', [BrewController::class, 'data']);
+Route::get('/v1/brews/{brew}', [BrewController::class, 'showData']);
 Route::post('/v1/brews', [BrewController::class, 'store']);
 Route::put('/v1/brews/{brew}/complete', [BrewController::class, 'complete']);
 Route::get('/v1/brews/{brew}/comments', [BrewController::class, 'comments']);

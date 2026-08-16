@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('stock.index');
+    }
+
+    public function data(): JsonResponse
     {
         $stock = DB::table('ingredients')
             ->join('categories', 'ingredients.category_id', '=', 'categories.id')
