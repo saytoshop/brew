@@ -1,8 +1,14 @@
 import { createApp, ref, reactive, computed, onMounted } from 'vue';
 
-console.log('Hello from Vite!');
+const VueGlobal = {
+    createApp,
+    ref,
+    reactive,
+    computed,
+    onMounted
+};
 
-// Экспортируем Vue глобально для использования в blade-шаблонах
 if (typeof window !== 'undefined') {
-    window.Vue = { createApp, ref, reactive, computed, onMounted };
+    window.Vue = VueGlobal;
+    console.log('Vue attached to window object', window.Vue);
 }
