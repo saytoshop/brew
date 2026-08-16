@@ -1,8 +1,15 @@
-import { createApp, ref, reactive, computed, onMounted } from 'vue';
+import { createApp } from 'vue';
+import SettingsPage from './components/SettingsPage.vue';
 
 console.log('Hello from Vite!');
 
-// Экспортируем Vue глобально для использования в blade-шаблонах
-if (typeof window !== 'undefined') {
-    window.Vue = { createApp, ref, reactive, computed, onMounted };
-}
+// Авто-монтирование компонентов на страницах
+document.addEventListener('DOMContentLoaded', () => {
+    // Монтируем компонент настроек если есть элемент с id="settings-app"
+    const settingsEl = document.getElementById('settings-app');
+    if (settingsEl) {
+        createApp(SettingsPage).mount(settingsEl);
+    }
+
+    console.log('Vue app initialized');
+});
