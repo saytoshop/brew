@@ -2,19 +2,27 @@
 # Compiled and build artifacts
 *.pyc
 __pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
 # Dependencies
 vendor/
 node_modules/
+.env
+.env.local
+.env.*
 
 # Logs and temp files
 *.log
 *.tmp
-
-# Environment
-.env
-.env.local
-*.env.*
+*.swp
+*.swo
 
 # Editors
 .vscode/
@@ -24,7 +32,12 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Build and distribution
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Build directories
 dist/
 build/
 target/
