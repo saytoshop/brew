@@ -151,13 +151,11 @@ const uploadFile = async () => {
     
     const formData = new FormData();
     formData.append('import_file', selectedFile.value);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
     try {
         const response = await fetch('/settings/import', {
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
             body: formData
         });
 
@@ -172,6 +170,7 @@ const uploadFile = async () => {
             importMessage.value = result.message || 'Ошибка импорта';
         }
     } catch (e) {
+        console.error(e);
         importSuccess.value = false;
         importMessage.value = 'Ошибка соединения с сервером';
     } finally {
