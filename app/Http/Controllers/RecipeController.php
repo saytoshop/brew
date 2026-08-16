@@ -20,7 +20,11 @@ class RecipeController extends Controller
 
     public function create()
     {
-        return view('recipes.create');
+        $ingredientsList = \App\Models\Ingredient::with(['category', 'unit'])->get();
+        $units = \App\Models\Unit::all();
+        $categories = \App\Models\Category::all();
+        
+        return view('recipes.create', compact('ingredientsList', 'units', 'categories'));
     }
 
     public function show(Recipe $recipe)
@@ -35,7 +39,13 @@ class RecipeController extends Controller
     public function edit(Recipe $recipe)
     {
         $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
-        return view('recipes.edit', compact('recipe'));
+        
+        // Подготовка данных для Vue-компонента редактирования
+        $ingredientsList = \App\Models\Ingredient::with(['category', 'unit'])->get();
+        $units = \App\Models\Unit::all();
+        $categories = \App\Models\Category::all();
+        
+        return view('recipes.edit', compact('recipe', 'ingredientsList', 'units', 'categories'));
     }
 
     public function data(): JsonResponse

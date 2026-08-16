@@ -8,7 +8,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Recipe extends Model
 {
-    protected $fillable = ['name', 'description'];
+    protected $fillable = [
+        'name', 
+        'description',
+        'wort_volume',
+        'og_target',
+        'fg_target',
+        'ibu_target',
+        'color_ebc',
+        'abv_target',
+        'batch_size',
+        'boil_time',
+        'efficiency',
+    ];
 
     public function ingredients(): HasMany
     {
