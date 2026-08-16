@@ -1,55 +1,46 @@
-```
-# Laravel-specific ignores
-*.key
+# Laravel
+/vendor/
 .env
-.env.local
 .env.*
-!.env.example
+*.env
+.env.backup
 composer.lock
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+composer.phar
+.phpunit.result.cache
+/.idea
+/.vscode
+/storage/*.key
+/storage/app/*
+/storage/framework/*
+/storage/logs/*
+/bootstrap/cache/*
 
-# PHP
-*.php~
-**/vendor/**/*
-!vendor/autoload.php
-
-# Build system
+# Node
 /node_modules/
-/bower_components/
-/public/hot
-/storage/oauth-private.key
-/storage/oauth-public.key
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build
+/public/build/
+public/hot
+public/storage
+
+# SQLite
+database/*.sqlite
+database/*.sqlite-journal
 
 # IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*.bak
+*.~*
 
-# Logs
+# Logs & Temp
 *.log
-storage/logs/
-bootstrap/cache/
-
-# Database
-database/seeds/
-database/factories/
-
-# Coverage
-coverage/
-*.gcda
-*.gcno
-
-# Environment specific
-.env.production
-.env.local
-.env.*
-!.env
-!.env.example
-```
+*.tmp
+.htaccess
