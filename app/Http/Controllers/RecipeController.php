@@ -10,7 +10,27 @@ use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('recipes.index');
+    }
+
+    public function create()
+    {
+        return view('recipes.create');
+    }
+
+    public function show(Recipe $recipe)
+    {
+        return view('recipes.show', compact('recipe'));
+    }
+
+    public function edit(Recipe $recipe)
+    {
+        return view('recipes.edit', compact('recipe'));
+    }
+
+    public function data(): JsonResponse
     {
         $recipes = Recipe::withCount('brews')->with('recipeIngredients.ingredient.category')
             ->orderBy('created_at', 'desc')
@@ -27,7 +47,7 @@ class RecipeController extends Controller
         return response()->json($recipes);
     }
 
-    public function show(Recipe $recipe): JsonResponse
+    public function showData(Recipe $recipe): JsonResponse
     {
         $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
 

@@ -12,7 +12,12 @@ use Illuminate\Support\Facades\DB;
 
 class IngredientController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('ingredients.index');
+    }
+
+    public function data(): JsonResponse
     {
         $ingredients = Ingredient::with(['category', 'unit'])->get()->map(function ($ing) {
             return [
@@ -27,7 +32,7 @@ class IngredientController extends Controller
         return response()->json($ingredients);
     }
 
-    public function show(Ingredient $ingredient): JsonResponse
+    public function showData(Ingredient $ingredient): JsonResponse
     {
         return response()->json($ingredient->load(['category', 'unit']));
     }

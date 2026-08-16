@@ -8,12 +8,17 @@ use Illuminate\Http\JsonResponse;
 
 class UnitController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('units.index');
+    }
+
+    public function data(): JsonResponse
     {
         return response()->json(Unit::orderBy('name')->get());
     }
 
-    public function show(Unit $unit): JsonResponse
+    public function showData(Unit $unit): JsonResponse
     {
         return response()->json($unit);
     }

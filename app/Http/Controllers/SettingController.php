@@ -11,7 +11,12 @@ use SQLite3;
 
 class SettingController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('settings.index');
+    }
+
+    public function data(): JsonResponse
     {
         return response()->json(Setting::all(['id', 'key', 'value']));
     }
