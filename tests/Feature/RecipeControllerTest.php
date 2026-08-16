@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +18,7 @@ class RecipeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
+        
         // Создаем тестовые данные
         $this->category = Category::create(['name' => 'Хмель']);
         $this->unit = Unit::create(['name' => 'г']);
@@ -44,7 +43,7 @@ class RecipeControllerTest extends TestCase
             'add_time_minutes' => 15,
         ]);
 
-        $response = $this->getJson('/api/recipes');
+        $response = $this->getJson('/api/v1/recipes');
 
         $response->assertStatus(200)
             ->assertJsonCount(1)
@@ -65,7 +64,7 @@ class RecipeControllerTest extends TestCase
             'add_time_minutes' => 60,
         ]);
 
-        $response = $this->getJson("/api/recipes/{$recipe->id}");
+        $response = $this->getJson("/api/v1/recipes/{$recipe->id}");
 
         $response->assertStatus(200)
             ->assertJsonPath('name', 'Test Lager')
@@ -86,7 +85,7 @@ class RecipeControllerTest extends TestCase
             ],
         ];
 
-        $response = $this->postJson('/api/recipes', $data);
+        $response = $this->postJson('/api/v1/recipes', $data);
 
         $response->assertStatus(201)
             ->assertJsonPath('name', 'New Stout');
@@ -117,7 +116,7 @@ class RecipeControllerTest extends TestCase
             ],
         ];
 
-        $response = $this->putJson("/api/recipes/{$recipe->id}", $updateData);
+        $response = $this->putJson("/api/v1/recipes/{$recipe->id}", $updateData);
 
         $response->assertStatus(200)
             ->assertJsonPath('name', 'Updated Pale Ale');
@@ -133,7 +132,7 @@ class RecipeControllerTest extends TestCase
             'description' => 'Will be deleted',
         ]);
 
-        $response = $this->deleteJson("/api/recipes/{$recipe->id}");
+        $response = $this->deleteJson("/api/v1/recipes/{$recipe->id}");
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('recipes', ['id' => $recipe->id]);
@@ -152,7 +151,7 @@ class RecipeControllerTest extends TestCase
             'cost_per_liter' => 1.5,
         ]);
 
-        $response = $this->getJson('/api/recipes');
+        $response = $this->getJson('/api/v1/recipes');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['brews_count' => 1]);
@@ -165,7 +164,7 @@ class RecipeControllerTest extends TestCase
             'description' => 'No ingredients yet',
         ]);
 
-        $response = $this->getJson('/api/recipes');
+        $response = $this->getJson('/api/v1/recipes');
 
         $response->assertStatus(200)
             ->assertJsonFragment(['ingredients_count' => 0]);
