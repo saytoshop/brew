@@ -35,7 +35,6 @@ zig*/
 
 # Environment
 .env
-.env.local
 .env.*
 
 # Editors
@@ -47,6 +46,10 @@ zig*/
 # OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*.bak
+*.~*
 
 # Coverage
 coverage/
