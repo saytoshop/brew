@@ -42,6 +42,10 @@ target/
 # System
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*.bak
+*.~*
 
 # Coverage
 coverage/
