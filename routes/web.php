@@ -17,8 +17,10 @@ Route::get('/equipment', [EquipmentController::class, 'index'])->name('equipment
 Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
 Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
 Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
 Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::get('/brews', [BrewController::class, 'index'])->name('brews.index');
 Route::get('/brews/{brew}', [BrewController::class, 'show'])->name('brews.show');
 Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
