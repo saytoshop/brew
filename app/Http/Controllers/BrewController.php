@@ -15,11 +15,13 @@ class BrewController extends Controller
 {
     public function index()
     {
-        return view('brews.index');
+        $brews = Brew::with('recipe')->orderBy('created_at', 'desc')->get();
+        return view('brews.index', compact('brews'));
     }
 
     public function show(Brew $brew)
     {
+        $brew->load(['recipe', 'brewIngredients.ingredient.category', 'brewComments']);
         return view('brews.show', compact('brew'));
     }
 
