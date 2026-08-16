@@ -31,7 +31,7 @@ class RecipeController extends Controller
     public function show(Recipe $recipe): JsonResponse
     {
         $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
-        
+
         // Расчёт себестоимости по FIFO (самая старая партия)
         $ingredients = $recipe->recipeIngredients->map(function ($ri) {
             $oldestBatch = DB::table('stock_batches')
@@ -39,19 +39,19 @@ class RecipeController extends Controller
                 ->where('quantity', '>', 0)
                 ->orderBy('purchase_date', 'asc')
                 ->first();
-            
+
             $hasStock = $oldestBatch && $oldestBatch->quantity >= $ri->quantity;
             $price = $oldestBatch ? $oldestBatch->price_per_unit : 0;
-            
+
             return [
                 'id' => $ri->ingredient->id,
                 'name' => $ri->ingredient->name,
                 'category' => $ri->ingredient->category->name,
                 'unit' => $ri->ingredient->unit->name,
-                'quantity' => (float) $ri->quantity,
-                'add_time_minutes' => (int) $ri->add_time_minutes,
-                'price_per_unit' => (float) $price,
-                'cost' => (float) ($ri->quantity * $price),
+                'quantity' => (float)$ri->quantity,
+                'add_time_minutes' => (int)$ri->add_time_minutes,
+                'price_per_unit' => (float)$price,
+                'cost' => (float)($ri->quantity * $price),
                 'has_stock' => $hasStock,
             ];
         });
@@ -63,7 +63,7 @@ class RecipeController extends Controller
             'name' => $recipe->name,
             'description' => $recipe->description,
             'ingredients' => $ingredients,
-            'total_cost' => (float) $totalCost,
+            'total_cost' => (float)$totalCost,
         ]);
     }
 
