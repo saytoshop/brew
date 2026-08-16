@@ -140,10 +140,37 @@ createApp({
 
         const importDb = async () => {
             importing.value = true;
-            // Для импорта нужен backend endpoint
-            alert('Для импорта используйте artisan команду: php artisan app:import-db file=путь_к_файлу');
-            showImportModal.value = false;
-            importing.value = false;
+            try {
+                const file = $refs.importFile.files[0];
+                if (!file) {
+                    alert('Выберите файл для импорта');
+                    importing.value = false;
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const res = await fetch('/api/v1/settings/import-db', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '' },
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message || 'Импорт выполнен успешно');
+                    showImportModal.value = false;
+                    // Перезагружаем страницу для обновления данных
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Ошибка импорта');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Ошибка импорта: ' + e.message);
+            }
+            finally { importing.value = false; }
         };
 
         onMounted(loadSettings);

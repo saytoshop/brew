@@ -38,4 +38,5 @@ Route::prefix('api/v1')->group(function () {
     Route::get('settings', [SettingController::class, 'index']);
     Route::put('settings', [SettingController::class, 'update']);
     Route::post('settings/export-db', [SettingController::class, 'exportDb']);
+    Route::post('settings/import-db', [SettingController::class, 'importDb']);
 });
