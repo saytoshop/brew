@@ -18,7 +18,7 @@ class RecipeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
+        
         // Создаем тестовые данные
         $this->category = Category::create(['name' => 'Хмель']);
         $this->unit = Unit::create(['name' => 'г']);
