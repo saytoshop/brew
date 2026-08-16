@@ -1,28 +1,27 @@
-```php
-# Laravel-specific ignores
-/bootstrap/cache/
-/storage/logs/
-/storage/framework/
-/vendor/
-
-# Environment
-.env
-.env.local
-.env.*
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
 *.log
-
-# Temporary files
-*.tmp
-```
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
