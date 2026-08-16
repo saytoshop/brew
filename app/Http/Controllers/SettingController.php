@@ -36,6 +36,21 @@ class SettingController extends Controller
         return response()->json(['message' => 'Настройки сохранены']);
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'key' => 'required|string',
+            'value' => 'required|string',
+        ]);
+
+        $setting = Setting::updateOrCreate(
+            ['key' => $validated['key']],
+            ['value' => $validated['value']]
+        );
+
+        return response()->json($setting);
+    }
+
     public function exportDb(): \Illuminate\Http\Response
     {
         $source = database_path('database.sqlite');

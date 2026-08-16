@@ -3,23 +3,21 @@
 @section('title', 'Редактировать рецепт: ' . ($recipe->name ?? 'Новый'))
 
 @section('content')
-    <div class="container">
+    <div class="main">
         <!-- Header -->
-        <div class="page-header">
-            <div class="header-content">
-                <h1 class="page-title">
-                    <a href="{{ route('recipes.index') }}" class="back-link" style="text-decoration: none; color: inherit;">←</a>
-                    {{ $recipe->id ? 'Редактировать рецепт' : 'Новый рецепт' }}
-                </h1>
-                <div class="header-actions">
-                    @if($recipe->id)
-                        <a href="{{ route('recipes.show', $recipe->id) }}" class="btn btn-outline">Отмена</a>
-                        <button type="submit" form="recipe-form" class="btn btn-primary">Сохранить</button>
-                    @else
-                        <a href="{{ route('recipes.index') }}" class="btn btn-outline">Отмена</a>
-                        <button type="submit" form="recipe-form" class="btn btn-primary">Создать</button>
-                    @endif
-                </div>
+        <div class="page-head">
+            <div>
+                <h1>{{ $recipe->id ? 'Редактировать рецепт' : 'Новый рецепт' }}</h1>
+                <p class="page-sub">Управление ингредиентами рецепта</p>
+            </div>
+            <div class="actions-row">
+                @if($recipe->id)
+                    <a href="{{ route('recipes.show', $recipe->id) }}" class="btn btn-outline">Отмена</a>
+                    <button type="submit" form="recipe-form" class="btn btn-primary">Сохранить</button>
+                @else
+                    <a href="{{ route('recipes.index') }}" class="btn btn-outline">Отмена</a>
+                    <button type="submit" form="recipe-form" class="btn btn-primary">Создать</button>
+                @endif
             </div>
         </div>
 
@@ -30,115 +28,99 @@
             @endif
 
             <!-- Main Info Card -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Основная информация</h2>
+            <div class="card card-pad" style="margin-top: 24px;">
+                <div class="field">
+                    <label for="name" class="field-label">Название рецепта</label>
+                    <input type="text" id="name" name="name" class="input" value="{{ old('name', $recipe->name ?? '') }}" required>
                 </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="name" class="form-label">Название рецепта</label>
-                        <input type="text" id="name" name="name" class="form-control" value="{{ old('name', $recipe->name ?? '') }}" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="description" class="form-label">Описание</label>
-                        <textarea id="description" name="description" class="form-control" rows="4">{{ old('description', $recipe->description ?? '') }}</textarea>
-                    </div>
+                <div class="field">
+                    <label for="description" class="field-label">Описание</label>
+                    <textarea id="description" name="description" class="input" rows="4">{{ old('description', $recipe->description ?? '') }}</textarea>
+                </div>
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="batch_size" class="form-label">Объем партии (л)</label>
-                                <input type="number" step="0.1" id="batch_size" name="batch_size" class="form-control" value="{{ old('batch_size', $recipe->batch_size ?? '') }}">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="boil_time" class="form-label">Время кипячения (мин)</label>
-                                <input type="number" id="boil_time" name="boil_time" class="form-control" value="{{ old('boil_time', $recipe->boil_time ?? 60) }}">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="efficiency" class="form-label">Эффективность варки (%)</label>
-                                <input type="number" id="efficiency" name="efficiency" class="form-control" value="{{ old('efficiency', $recipe->efficiency ?? 75) }}">
-                            </div>
-                        </div>
+                <div class="settings-grid" style="margin-top: 16px;">
+                    <div class="field">
+                        <label for="batch_size" class="field-label">Объем партии (л)</label>
+                        <input type="number" step="0.1" id="batch_size" name="batch_size" class="input" value="{{ old('batch_size', $recipe->batch_size ?? '') }}">
+                    </div>
+                    <div class="field">
+                        <label for="boil_time" class="field-label">Время кипячения (мин)</label>
+                        <input type="number" id="boil_time" name="boil_time" class="input" value="{{ old('boil_time', $recipe->boil_time ?? 60) }}">
+                    </div>
+                    <div class="field">
+                        <label for="efficiency" class="field-label">Эффективность варки (%)</label>
+                        <input type="number" id="efficiency" name="efficiency" class="input" value="{{ old('efficiency', $recipe->efficiency ?? 75) }}">
                     </div>
                 </div>
             </div>
 
             <!-- Two Column Layout for Ingredients -->
-            <div class="row">
+            <div class="settings-grid" style="margin-top: 24px; gap: 20px;">
                 <!-- Left Column: Recipe Ingredients -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Ингредиенты рецепта</h2>
-                            <button type="button" class="btn btn-sm btn-outline" onclick="addIngredientRow()">+ Добавить</button>
-                        </div>
-                        <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                            <table class="table" id="ingredients-table">
-                                <thead>
-                                <tr>
-                                    <th style="width: 40%;">Ингредиент</th>
-                                    <th style="width: 25%;">Количество</th>
-                                    <th style="width: 20%;">Время (мин)</th>
-                                    <th style="width: 15%;"></th>
-                                </tr>
-                                </thead>
-                                <tbody id="ingredients-list">
-                                <!-- Rows will be added via JS -->
-                                </tbody>
-                            </table>
-                            <div id="empty-ingredients-message" class="text-center text-muted" style="padding: 2rem;">
-                                Нет ингредиентов. Нажмите "+ Добавить", чтобы начать.
+                <div>
+                    <div class="card" style="height: 100%;">
+                        <div class="card-table">
+                            <div class="table-head">
+                                <div class="section-title">Ингредиенты рецепта</div>
+                            </div>
+                            <div style="padding: 0 20px 20px;">
+                                <div id="recipe-ingredients-container">
+                                    <!-- Категории ингредиентов будут здесь -->
+                                </div>
+                                <div id="empty-ingredients-message" class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px;">
+                                    Нет ингредиентов. Кликните на ингредиент справа, чтобы добавить.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Right Column: Stock Ingredients -->
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Ингредиенты на складе</h2>
-                        </div>
-                        <div class="card-body" style="max-height: 500px; overflow-y: auto;">
-                            @if($stockIngredients->isEmpty())
-                                <div class="text-center text-muted" style="padding: 2rem;">
-                                    Склад пуст. Добавьте ингредиенты на склад.
-                                </div>
-                            @else
-                                @foreach($stockIngredients as $categoryName => $ingredients)
-                                    <div class="ingredient-category" style="margin-bottom: 1.5rem;">
-                                        <h4 style="margin-bottom: 0.75rem; color: var(--primary-color); border-bottom: 1px solid #e0e0e0; padding-bottom: 0.5rem;">
-                                            {{ $categoryName }}
-                                        </h4>
-                                        @foreach($ingredients as $ingredient)
-                                            <div class="stock-ingredient-item" 
-                                                 style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; cursor: pointer; transition: background-color 0.2s;"
-                                                 onmouseover="this.style.backgroundColor='#f5f5f5'"
-                                                 onmouseout="this.style.backgroundColor='transparent'"
-                                                 onclick="addStockIngredient({{ json_encode($ingredient) }})">
-                                                <div>
-                                                    <strong>{{ $ingredient['name'] }}</strong>
-                                                    <div style="font-size: 0.85em; color: #666;">
-                                                        Доступно: {{ $ingredient['total_quantity'] }} {{ $ingredient['unit_name'] }}
-                                                    </div>
-                                                </div>
-                                                <span class="btn btn-sm btn-outline" style="pointer-events: none;">+ Добавить</span>
-                                            </div>
-                                        @endforeach
+                <div>
+                    <div class="card" style="height: 100%;">
+                        <div class="card-table">
+                            <div class="table-head">
+                                <div class="section-title">Ингредиенты на складе</div>
+                            </div>
+                            <div style="padding: 0 20px 20px; max-height: 500px; overflow-y: auto;">
+                                @if($stockIngredients->isEmpty())
+                                    <div class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px;">
+                                        Склад пуст или все ингредиенты уже добавлены в рецепт.
                                     </div>
-                                @endforeach
-                            @endif
+                                @else
+                                    @foreach($stockIngredients as $categoryName => $ingredients)
+                                        <div class="ingredient-category" style="margin-bottom: 16px;">
+                                            <div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px;">
+                                                {{ $categoryName }}
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                @foreach($ingredients as $ingredient)
+                                                    <div class="stock-ingredient-item" 
+                                                         style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background-color 0.15s; border: 1px solid #e7eaee;"
+                                                         onmouseover="this.style.backgroundColor='#f9fafb'"
+                                                         onmouseout="this.style.backgroundColor='transparent'"
+                                                         onclick="addStockIngredient({{ json_encode($ingredient) }})">
+                                                        <div>
+                                                            <strong style="font-size: 13px; color: #1a1a1a;">{{ $ingredient['name'] }}</strong>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">
+                                                                Доступно: {{ $ingredient['total_quantity'] }} {{ $ingredient['unit_name'] }}
+                                                            </div>
+                                                        </div>
+                                                        <span class="btn btn-sm btn-outline" style="pointer-events: none;">+ Добавить</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-actions">
+            <div class="form-actions" style="margin-top: 24px; display: flex; gap: 10px;">
                 <a href="{{ route('recipes.index') }}" class="btn btn-outline">Отмена</a>
                 <button type="submit" class="btn btn-primary">{{ $recipe->id ? 'Сохранить изменения' : 'Создать рецепт' }}</button>
             </div>
@@ -159,16 +141,17 @@
                             ingredient_name: '{{ addslashes($ri['ingredient_name']) }}',
                             quantity: {{ $ri['quantity'] }},
                             add_time_minutes: {{ $ri['add_time_minutes'] }},
-                            unit_name: '{{ addslashes($ri['unit_name']) }}'
+                            unit_name: '{{ addslashes($ri['unit_name']) }}',
+                            category_name: '{{ addslashes($categoryName) }}'
                         });
                     @endforeach
                 @endforeach
             @endif
 
             function renderIngredients() {
-                const tbody = document.getElementById('ingredients-list');
+                const container = document.getElementById('recipe-ingredients-container');
                 const emptyMsg = document.getElementById('empty-ingredients-message');
-                tbody.innerHTML = '';
+                container.innerHTML = '';
 
                 if (ingredients.length === 0) {
                     emptyMsg.style.display = 'block';
@@ -176,59 +159,89 @@
                 }
                 emptyMsg.style.display = 'none';
 
-                ingredients.forEach((item, index) => {
-                    const row = document.createElement('tr');
+                // Группируем ингредиенты по категориям
+                const grouped = ingredients.reduce((acc, item) => {
+                    const cat = item.category_name || 'Без категории';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(item);
+                    return acc;
+                }, {});
 
-                    // Ingredient Select
-                    let options = '<option value="">Выберите ингредиент</option>';
-                    allIngredients.forEach(ing => {
-                        const selected = ing.id == item.ingredient_id ? 'selected' : '';
-                        options += `<option value="${ing.id}" data-unit="${ing.unit_id}" ${selected}>${ing.name}</option>`;
+                // Рендерим по категориям
+                Object.keys(grouped).sort().forEach(categoryName => {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.style.marginBottom = '16px';
+
+                    // Заголовок категории
+                    const catHeader = document.createElement('div');
+                    catHeader.style.cssText = 'font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px;';
+                    catHeader.textContent = categoryName;
+                    categoryDiv.appendChild(catHeader);
+
+                    // Список ингредиентов категории
+                    const listDiv = document.createElement('div');
+                    listDiv.style.cssText = 'display: flex; flex-direction: column; gap: 4px;';
+
+                    grouped[categoryName].forEach((item, index) => {
+                        const rowDiv = document.createElement('div');
+                        rowDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 1px solid #e7eaee; background: #fff;';
+                        
+                        // Название ингредиента (просто текст)
+                        const nameSpan = document.createElement('span');
+                        nameSpan.style.cssText = 'flex: 1; font-size: 13px; color: #1a1a1a;';
+                        nameSpan.textContent = item.ingredient_name;
+                        rowDiv.appendChild(nameSpan);
+
+                        // Количество
+                        const qtyInput = document.createElement('input');
+                        qtyInput.type = 'number';
+                        qtyInput.step = '0.01';
+                        qtyInput.name = `ingredients[${index}][quantity]`;
+                        qtyInput.value = item.quantity;
+                        qtyInput.required = true;
+                        qtyInput.style.cssText = 'width: 80px; padding: 6px 8px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px;';
+                        rowDiv.appendChild(qtyInput);
+
+                        // Единица измерения (текст)
+                        const unitSpan = document.createElement('span');
+                        unitSpan.style.cssText = 'font-size: 12px; color: #6b7280; width: 40px;';
+                        unitSpan.textContent = item.unit_name;
+                        rowDiv.appendChild(unitSpan);
+
+                        // Время добавления
+                        const timeInput = document.createElement('input');
+                        timeInput.type = 'number';
+                        timeInput.name = `ingredients[${index}][add_time]`;
+                        timeInput.value = item.add_time_minutes || 0;
+                        timeInput.style.cssText = 'width: 60px; padding: 6px 8px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px;';
+                        rowDiv.appendChild(timeInput);
+
+                        // Скрытые поля
+                        const ingIdInput = document.createElement('input');
+                        ingIdInput.type = 'hidden';
+                        ingIdInput.name = `ingredients[${index}][ingredient_id]`;
+                        ingIdInput.value = item.ingredient_id;
+                        rowDiv.appendChild(ingIdInput);
+
+                        // Кнопка удаления
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'icon-btn danger';
+                        removeBtn.textContent = '×';
+                        removeBtn.onclick = () => removeIngredient(index);
+                        rowDiv.appendChild(removeBtn);
+
+                        listDiv.appendChild(rowDiv);
                     });
 
-                    row.innerHTML = `
-                <td>
-                    <select name="ingredients[${index}][ingredient_id]" class="form-control ingredient-select" onchange="updateUnit(${index})">
-                        ${options}
-                    </select>
-                </td>
-                <td>
-                    <input type="number" step="0.01" name="ingredients[${index}][quantity]" class="form-control" value="${item.quantity || ''}" required>
-                </td>
-                <td>
-                    <input type="number" name="ingredients[${index}][add_time]" class="form-control" value="${item.add_time_minutes || 0}">
-                </td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeIngredient(${index})">×</button>
-                </td>
-            `;
-                    tbody.appendChild(row);
+                    categoryDiv.appendChild(listDiv);
+                    container.appendChild(categoryDiv);
                 });
-            }
-
-            function addIngredientRow() {
-                ingredients.push({ ingredient_id: '', ingredient_name: '', quantity: '', add_time_minutes: 0, unit_name: '' });
-                renderIngredients();
             }
 
             function removeIngredient(index) {
                 ingredients.splice(index, 1);
                 renderIngredients();
-            }
-
-            function updateUnit(index) {
-                const select = document.querySelector(`select[name="ingredients[${index}][ingredient_id]"]`);
-                const option = select.options[select.selectedIndex];
-                const unitId = option.getAttribute('data-unit');
-
-                // Find unit name by ID
-                const allUnits = @json($units);
-                const unitObj = allUnits.find(u => u.id == unitId);
-                
-                const unitInput = document.querySelector(`input[name="ingredients[${index}][unit_name]"]`);
-                if (unitInput && unitObj) {
-                    unitInput.value = unitObj.name;
-                }
             }
 
             function addStockIngredient(stockIng) {
@@ -245,7 +258,8 @@
                     ingredient_name: stockIng.name,
                     quantity: 0,
                     add_time_minutes: 0,
-                    unit_name: stockIng.unit_name
+                    unit_name: stockIng.unit_name,
+                    category_name: stockIng.category_name
                 });
                 renderIngredients();
             }
