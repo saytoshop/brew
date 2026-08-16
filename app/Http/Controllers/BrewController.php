@@ -21,7 +21,7 @@ class BrewController extends Controller
 
     public function show(Brew $brew)
     {
-        $brew->load(['recipe', 'brewIngredients.ingredient.category', 'brewComments']);
+        $brew->load(['recipe', 'ingredients.ingredient.category', 'comments']);
         return view('brews.show', compact('brew'));
     }
 
@@ -44,9 +44,9 @@ class BrewController extends Controller
 
     public function showData(Brew $brew): JsonResponse
     {
-        $brew->load(['recipe', 'brewIngredients.ingredient.category', 'brewComments']);
+        $brew->load(['recipe', 'ingredients.ingredient.category', 'comments']);
         
-        $ingredients = $brew->brewIngredients->map(function ($bi) {
+        $ingredients = $brew->ingredients->map(function ($bi) {
             return [
                 'id' => $bi->id,
                 'ingredient_name' => $bi->ingredient->name,
@@ -56,7 +56,7 @@ class BrewController extends Controller
             ];
         });
 
-        $comments = $brew->brewComments->map(function ($c) {
+        $comments = $brew->comments->map(function ($c) {
             return [
                 'id' => $c->id,
                 'content' => $c->content,
