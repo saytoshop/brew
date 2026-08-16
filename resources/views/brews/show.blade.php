@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    @if($brew->brewIngredients && $brew->brewIngredients->count() > 0)
+    @if($brew->ingredients && $brew->ingredients->count() > 0)
         <div class="card card-table">
             <div class="table-head">
                 <h2 class="section-title">Ингредиенты</h2>
@@ -48,7 +48,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($brew->brewIngredients as $bi)
+                    @foreach($brew->ingredients as $bi)
                         <tr>
                             <td>{{ $bi->ingredient->name ?? 'Неизвестно' }}</td>
                             <td>{{ $bi->ingredient->category->name ?? '-' }}</td>
@@ -61,10 +61,10 @@
         </div>
     @endif
 
-    @if($brew->brewComments && $brew->brewComments->count() > 0)
+    @if($brew->comments && $brew->comments->count() > 0)
         <div class="card card-pad" style="margin-top: 24px;">
             <h2 class="section-title" style="margin-bottom: 16px;">Комментарии</h2>
-            @foreach($brew->brewComments as $comment)
+            @foreach($brew->comments as $comment)
                 <div style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; font-size: 14px;">
                     <div style="color: #6b7280; font-size: 12px; margin-bottom: 4px;">
                         {{ $comment->created_at->format('d.m.Y H:i') }}
