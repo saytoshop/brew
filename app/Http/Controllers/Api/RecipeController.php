@@ -22,7 +22,7 @@ class RecipeController extends Controller
                     'name' => $recipe->name,
                     'description' => $recipe->description,
                     'brews_count' => $recipe->brews_count,
-                    'ingredients_count' => $recipe->recipe_ingredients->count(),
+                    'ingredients_count' => $recipe->recipeIngredients ? $recipe->recipeIngredients->count() : 0,
                 ];
             });
         return response()->json($recipes);
