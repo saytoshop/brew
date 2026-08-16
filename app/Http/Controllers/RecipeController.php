@@ -40,12 +40,50 @@ class RecipeController extends Controller
     {
         $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
         
-        // Подготовка данных для Vue-компонента редактирования
+        // Получаем все ингредиенты с их данными
         $ingredientsList = \App\Models\Ingredient::with(['category', 'unit'])->get();
         $units = \App\Models\Unit::all();
         $categories = \App\Models\Category::all();
         
-        return view('recipes.edit', compact('recipe', 'ingredientsList', 'units', 'categories'));
+        // Получаем складские запасы, сгруппированные по категориям
+        $stockIngredients = \App\Models\Ingredient::with(['category', 'unit', 'stockBatches'])
+            ->has('stockBatches')
+            ->get()
+            ->map(function ($ingredient) {
+                $totalQuantity = $ingredient->stockBatches->sum('quantity');
+                return [
+                    'id' => $ingredient->id,
+                    'name' => $ingredient->name,
+                    'category_id' => $ingredient->category_id,
+                    'category_name' => $ingredient->category->name ?? 'Без категории',
+                    'unit_id' => $ingredient->unit_id,
+                    'unit_name' => $ingredient->unit->name ?? 'шт.',
+                    'total_quantity' => $totalQuantity,
+                ];
+            })
+            ->sortBy('category_name')
+            ->groupBy('category_name');
+        
+        // Текущие ингредиенты рецепта
+        $recipeIngredients = $recipe->recipeIngredients->map(function ($ri) {
+            return [
+                'ingredient_id' => $ri->ingredient_id,
+                'ingredient_name' => $ri->ingredient->name,
+                'category_name' => $ri->ingredient->category->name ?? 'Без категории',
+                'quantity' => (float)$ri->quantity,
+                'add_time_minutes' => (int)$ri->add_time_minutes,
+                'unit_name' => $ri->ingredient->unit->name ?? 'шт.',
+            ];
+        })->groupBy('category_name');
+        
+        return view('recipes.edit', compact(
+            'recipe', 
+            'ingredientsList', 
+            'units', 
+            'categories',
+            'stockIngredients',
+            'recipeIngredients'
+        ));
     }
 
     public function data(): JsonResponse
@@ -104,15 +142,18 @@ class RecipeController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'batch_size' => 'nullable|numeric|min:0.1',
+            'boil_time' => 'nullable|integer|min:0',
+            'efficiency' => 'nullable|integer|min:0|max:100',
             'ingredients' => 'required|array',
             'ingredients.*.ingredient_id' => 'required|exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|min:0.01',
-            'ingredients.*.add_time_minutes' => 'required|integer|min:0',
+            'ingredients.*.add_time' => 'required|integer|min:0',
         ]);
 
         DB::beginTransaction();
@@ -120,6 +161,9 @@ class RecipeController extends Controller
             $recipe = Recipe::create([
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? '',
+                'batch_size' => $validated['batch_size'] ?? null,
+                'boil_time' => $validated['boil_time'] ?? 60,
+                'efficiency' => $validated['efficiency'] ?? 75,
             ]);
 
             foreach ($validated['ingredients'] as $ing) {
@@ -127,27 +171,37 @@ class RecipeController extends Controller
                     'recipe_id' => $recipe->id,
                     'ingredient_id' => $ing['ingredient_id'],
                     'quantity' => $ing['quantity'],
-                    'add_time_minutes' => $ing['add_time_minutes'],
+                    'add_time_minutes' => $ing['add_time'],
                 ]);
             }
 
             DB::commit();
-            return response()->json($recipe->load('recipeIngredients'), 201);
+            
+            if ($request->expectsJson()) {
+                return response()->json($recipe->load('recipeIngredients'), 201);
+            }
+            return redirect()->route('recipes.index')->with('success', 'Рецепт создан');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
-    public function update(Request $request, Recipe $recipe): JsonResponse
+    public function update(Request $request, Recipe $recipe)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'batch_size' => 'nullable|numeric|min:0.1',
+            'boil_time' => 'nullable|integer|min:0',
+            'efficiency' => 'nullable|integer|min:0|max:100',
             'ingredients' => 'required|array',
             'ingredients.*.ingredient_id' => 'required|exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|min:0.01',
-            'ingredients.*.add_time_minutes' => 'required|integer|min:0',
+            'ingredients.*.add_time' => 'required|integer|min:0',
         ]);
 
         DB::beginTransaction();
@@ -155,6 +209,9 @@ class RecipeController extends Controller
             $recipe->update([
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? '',
+                'batch_size' => $validated['batch_size'] ?? null,
+                'boil_time' => $validated['boil_time'] ?? 60,
+                'efficiency' => $validated['efficiency'] ?? 75,
             ]);
 
             $recipe->recipeIngredients()->delete();
@@ -163,15 +220,22 @@ class RecipeController extends Controller
                     'recipe_id' => $recipe->id,
                     'ingredient_id' => $ing['ingredient_id'],
                     'quantity' => $ing['quantity'],
-                    'add_time_minutes' => $ing['add_time_minutes'],
+                    'add_time_minutes' => $ing['add_time'],
                 ]);
             }
 
             DB::commit();
-            return response()->json($recipe->load('recipeIngredients'));
+            
+            if ($request->expectsJson()) {
+                return response()->json($recipe->load('recipeIngredients'));
+            }
+            return redirect()->route('recipes.index')->with('success', 'Рецепт обновлен');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            if ($request->expectsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+            return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
