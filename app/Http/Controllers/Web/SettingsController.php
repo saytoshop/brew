@@ -1,157 +1,158 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
+use PDO;
 
 class SettingsController extends Controller
 {
-    public function index(): View
+    public function index()
     {
-        return view('settings.index');
+        $settings = DB::table('user_settings')
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$settings) {
+            // Создаем настройки по умолчанию, если их нет
+            DB::table('user_settings')->insert([
+                'user_id' => auth()->id(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $settings = DB::table('user_settings')->where('user_id', auth()->id())->first();
+        }
+
+        return view('settings.index', compact('settings'));
     }
 
-    public function import(Request $request): JsonResponse
+    public function update(Request $request)
     {
-        $request->validate([
-            'import_file' => 'required|file|mimes:sqlite,db,sqlite3'
+        $validated = $request->validate([
+            'water_brewing_cost' => 'required|numeric|min:0',
+            'water_cleaning_cost' => 'required|numeric|min:0',
+            'electricity_cost' => 'required|numeric|min:0',
+            'co2_cost' => 'required|numeric|min:0',
+            'hourly_rate' => 'required|numeric|min:0',
+            'fuel_consumption' => 'required|numeric|min:0',
+            'fuel_cost' => 'required|numeric|min:0',
+            'include_fuel_in_costs' => 'boolean',
+            'include_depreciation_in_costs' => 'boolean',
+            'equipment_volume' => 'required|numeric|min:0',
+            'max_power' => 'required|numeric|min:0',
+            'water_cost_per_cubic_meter' => 'required|numeric|min:0',
+            'gas_cost_per_cubic_meter' => 'required|numeric|min:0',
+            'osmosis_water_cost' => 'required|numeric|min:0',
         ]);
 
+        $validated['updated_at'] = now();
+        $validated['include_fuel_in_costs'] = $request->has('include_fuel_in_costs');
+        $validated['include_depreciation_in_costs'] = $request->has('include_depreciation_in_costs');
+
+        DB::table('user_settings')
+            ->where('user_id', auth()->id())
+            ->update($validated);
+
+        return redirect()->back()->with('success', 'Настройки успешно сохранены.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'sqlite_file' => 'required|file|mimes:sqlite,db',
+        ]);
+
+        $file = $request->file('sqlite_file');
+        $tempPath = $file->getRealPath();
+
+        // Таблицы, которые НЕ нужно импортировать (системные или с отличающейся структурой)
+        $excludedTables = [
+            'users', 'migrations', 'password_reset_tokens', 'failed_jobs',
+            'jobs', 'job_batches', 'cache', 'cache_locks', 'sessions',
+            'sqlite_sequence', 'sqlite_master'
+        ];
+
         try {
-            $file = $request->file('import_file');
-            $tempPath = $file->storeAs('imports', uniqid() . '.sqlite', 'public');
-            $fullPath = storage_path('app/public/' . $tempPath);
+            // Подключаемся к временному файлу SQLite
+            $sourceDb = new PDO("sqlite:$tempPath");
+            $sourceDb->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Открываем SQLite базу
-            $sqlite = new \PDO('sqlite:' . $fullPath);
-            $sqlite->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            // Получаем список таблиц в источнике
+            $sourceTables = $sourceDb->query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+                ->fetchAll(\PDO::FETCH_COLUMN);
 
-            $imported = 0;
+            DB::beginTransaction();
 
-            // Импортируем пользователей
-            $users = $sqlite->query('SELECT * FROM users')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($users as $user) {
-                DB::table('users')->updateOrInsert(
-                    ['email' => $user['email']],
-                    [
-                        'name' => $user['name'],
-                        'password' => $user['password'],
-                        'role' => $user['role'] ?? 'user',
-                        'created_at' => $user['created_at'] ?? null,
-                        'updated_at' => $user['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
+            foreach ($sourceTables as $tableName) {
+                // Пропускаем исключенные таблицы
+                if (in_array($tableName, $excludedTables)) {
+                    continue;
+                }
+
+                // Проверяем, существует ли такая таблица в нашей БД
+                if (!Schema::hasTable($tableName)) {
+                    Log::warning("Table $tableName not found in destination. Skipping.");
+                    continue;
+                }
+
+                // Получаем колонки источника
+                $sourceColumnsStmt = $sourceDb->query("PRAGMA table_info('$tableName')");
+                $sourceColumns = $sourceColumnsStmt->fetchAll(\PDO::FETCH_COLUMN, 1); // Имя колонки во втором столбце
+
+                // Получаем колонки назначения (нашей БД)
+                $destColumns = Schema::getColumnListing($tableName);
+
+                // Находим пересечение колонок (только те, что есть в обеих БД)
+                $commonColumns = array_intersect($sourceColumns, $destColumns);
+
+                if (empty($commonColumns)) {
+                    Log::warning("No common columns for table $tableName. Skipping.");
+                    continue;
+                }
+
+                // Формируем список колонок для выборки
+                $colsList = implode(', ', array_map(fn($c) => "\"$c\"", $commonColumns));
+
+                // Выбираем данные из источника
+                $rows = $sourceDb->query("SELECT $colsList FROM \"$tableName\"")->fetchAll(\PDO::FETCH_ASSOC);
+
+                if (empty($rows)) {
+                    continue;
+                }
+
+                // Вставляем данные в нашу БД
+                // Используем upsert или игнорирование дублей по ID, если это уместно.
+                // Для простоты используем insert, но можно добавить логику обновления.
+                // Важно: если есть автоинкремент ID, нужно разрешить вставку явных ID
+
+                foreach ($rows as $row) {
+                    // Очищаем данные от лишних ключей (на всякий случай)
+                    $cleanRow = [];
+                    foreach ($commonColumns as $col) {
+                        if (array_key_exists($col, $row)) {
+                            $cleanRow[$col] = $row[$col];
+                        }
+                    }
+
+                    // Если есть ID, пробуем вставить, иначе создаем новую
+                    if (isset($cleanRow['id'])) {
+                        DB::table($tableName)->updateOrInsert(['id' => $cleanRow['id']], $cleanRow);
+                    } else {
+                        DB::table($tableName)->insert($cleanRow);
+                    }
+                }
             }
 
-            // Импортируем категории
-            $categories = $sqlite->query('SELECT * FROM categories')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($categories as $category) {
-                DB::table('categories')->updateOrInsert(
-                    ['name' => $category['name'], 'user_id' => $category['user_id']],
-                    [
-                        'color' => $category['color'] ?? 'gray',
-                        'is_system' => $category['is_system'] ?? 0,
-                        'created_at' => $category['created_at'] ?? null,
-                        'updated_at' => $category['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
-            }
-
-            // Импортируем supplies (ингредиенты)
-            $supplies = $sqlite->query('SELECT * FROM supplies')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($supplies as $supply) {
-                DB::table('supplies')->updateOrInsert(
-                    ['name' => $supply['name'], 'user_id' => $supply['user_id']],
-                    [
-                        'category_id' => $supply['category_id'],
-                        'unit' => $supply['unit'],
-                        'notes' => $supply['notes'] ?? null,
-                        'created_at' => $supply['created_at'] ?? null,
-                        'updated_at' => $supply['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
-            }
-
-            // Импортируем оборудование
-            $equipment = $sqlite->query('SELECT * FROM equipment')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($equipment as $item) {
-                DB::table('equipment')->updateOrInsert(
-                    ['name' => $item['name'], 'user_id' => $item['user_id']],
-                    [
-                        'cost' => $item['cost'],
-                        'notes' => $item['notes'] ?? null,
-                        'created_at' => $item['created_at'] ?? null,
-                        'updated_at' => $item['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
-            }
-
-            // Импортируем рецепты
-            $recipes = $sqlite->query('SELECT * FROM recipes')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($recipes as $recipe) {
-                DB::table('recipes')->updateOrInsert(
-                    ['name' => $recipe['name'], 'user_id' => $recipe['user_id']],
-                    [
-                        'description' => $recipe['description'] ?? null,
-                        'style' => $recipe['style'] ?? 'Other',
-                        'target_volume' => $recipe['target_volume'] ?? 20,
-                        'boil_time' => $recipe['boil_time'] ?? 60,
-                        'mash_water_volume' => $recipe['mash_water_volume'] ?? 25,
-                        'sparge_water_volume' => $recipe['sparge_water_volume'] ?? 15,
-                        'target_og' => $recipe['target_og'] ?? null,
-                        'target_fg' => $recipe['target_fg'] ?? null,
-                        'target_abv' => $recipe['target_abv'] ?? null,
-                        'target_ibu' => $recipe['target_ibu'] ?? null,
-                        'instructions' => $recipe['instructions'] ?? null,
-                        'mash_steps' => $recipe['mash_steps'] ?? null,
-                        'created_at' => $recipe['created_at'] ?? null,
-                        'updated_at' => $recipe['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
-            }
-
-            // Импортируем варки
-            $brews = $sqlite->query('SELECT * FROM brewing_sessions')->fetchAll(\PDO::FETCH_ASSOC);
-            foreach ($brews as $brew) {
-                DB::table('brewing_sessions')->updateOrInsert(
-                    ['name' => $brew['name'], 'user_id' => $brew['user_id']],
-                    [
-                        'recipe_id' => $brew['recipe_id'] ?? null,
-                        'batch_volume' => $brew['batch_volume'] ?? 0,
-                        'water_brewing_volume' => $brew['water_brewing_volume'] ?? 0,
-                        'water_cleaning_volume' => $brew['water_cleaning_volume'] ?? 0,
-                        'water_cooling_volume' => $brew['water_cooling_volume'] ?? 0,
-                        'electricity_kwh' => $brew['electricity_kwh'] ?? 0,
-                        'co2_grams' => $brew['co2_grams'] ?? 0,
-                        'started_at' => $brew['started_at'] ?? null,
-                        'finished_at' => $brew['finished_at'] ?? null,
-                        'total_cost' => $brew['total_cost'] ?? null,
-                        'notes' => $brew['notes'] ?? null,
-                        'created_at' => $brew['created_at'] ?? null,
-                        'updated_at' => $brew['updated_at'] ?? null,
-                    ]
-                );
-                $imported++;
-            }
-
-            // Удаляем временный файл
-            if (file_exists($fullPath)) {
-                unlink($fullPath);
-            }
-
-            return response()->json(['success' => true, 'imported' => $imported]);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Импорт успешно завершен!']);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            DB::rollBack();
+            Log::error('Import failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ошибка импорта: ' . $e->getMessage()], 500);
         }
     }
 }
