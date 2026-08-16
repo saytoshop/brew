@@ -78,7 +78,8 @@ Route::put('/api/v1/comments/{comment}', [BrewController::class, 'updateComment'
 Route::delete('/api/v1/comments/{comment}', [BrewController::class, 'deleteComment']);
 
 // Settings
-Route::get('/api/v1/settings', [SettingController::class, 'index']);
+Route::get('/api/v1/settings', [SettingController::class, 'data']);
+Route::post('/api/v1/settings', [SettingController::class, 'store']);
 Route::put('/api/v1/settings', [SettingController::class, 'update']);
 Route::post('/api/v1/settings/export-db', [SettingController::class, 'exportDb']);
 Route::post('/api/v1/settings/import-db', [SettingController::class, 'importDb']);

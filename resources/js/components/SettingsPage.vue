@@ -48,6 +48,18 @@
                     </label>
                 </div>
 
+                <h3 style="margin: 20px 0 15px; font-size: 16px;">Настройки ингредиентов</h3>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" v-model="settings.show_zero_stock_ingredients">
+                        Показывать ингредиенты с нулевым остатком на складе
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" v-model="settings.show_existing_recipe_ingredients">
+                        Показывать ингредиенты, уже добавленные в рецепт
+                    </label>
+                </div>
+
                 <button type="submit" class="btn btn-primary" :disabled="loading">
                     {{ loading ? 'Сохранение...' : 'Сохранить настройки' }}
                 </button>
@@ -98,6 +110,8 @@ const settings = reactive({
     fuel_cost: 0,
     include_fuel_in_costs: false,
     include_depreciation_in_costs: false,
+    show_zero_stock_ingredients: false,
+    show_existing_recipe_ingredients: false,
 });
 
 // Загрузка текущих настроек

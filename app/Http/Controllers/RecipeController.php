@@ -45,10 +45,22 @@ class RecipeController extends Controller
         $units = \App\Models\Unit::all();
         $categories = \App\Models\Category::all();
         
+        // Получаем настройки отображения ингредиентов
+        $showZeroStock = \App\Models\Setting::where('key', 'show_zero_stock_ingredients')->first()?->value === 'true';
+        $showExistingInRecipe = \App\Models\Setting::where('key', 'show_existing_recipe_ingredients')->first()?->value === 'true';
+        
+        // IDs ингредиентов уже в рецепте
+        $existingRecipeIngredientIds = $recipe->recipeIngredients->pluck('ingredient_id')->toArray();
+        
         // Получаем складские запасы, сгруппированные по категориям
-        $stockIngredients = \App\Models\Ingredient::with(['category', 'unit', 'stockBatches'])
-            ->has('stockBatches')
-            ->get()
+        $stockQuery = \App\Models\Ingredient::with(['category', 'unit', 'stockBatches']);
+        
+        // Если не показывать нулевые остатки - фильтруем
+        if (!$showZeroStock) {
+            $stockQuery->has('stockBatches');
+        }
+        
+        $stockIngredients = $stockQuery->get()
             ->map(function ($ingredient) {
                 $totalQuantity = $ingredient->stockBatches->sum('quantity');
                 return [
@@ -60,6 +72,13 @@ class RecipeController extends Controller
                     'unit_name' => $ingredient->unit->name ?? 'шт.',
                     'total_quantity' => $totalQuantity,
                 ];
+            })
+            ->filter(function ($ingredient) use ($existingRecipeIngredientIds, $showExistingInRecipe) {
+                // Если не показывать уже добавленные в рецепт и этот ингредиент уже есть - пропускаем
+                if (!$showExistingInRecipe && in_array($ingredient['id'], $existingRecipeIngredientIds)) {
+                    return false;
+                }
+                return true;
             })
             ->sortBy('category_name')
             ->groupBy('category_name');
