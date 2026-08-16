@@ -76,6 +76,8 @@ h1 { font-size: 22px; font-weight: 700; letter-spacing: -.015em; }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-primary { background: #0077ff; color: #fff; }
 .btn-primary:hover:not(:disabled) { background: #0066dd; }
+.btn-amber { background: #f59e0b; color: #fff; }
+.btn-amber:hover:not(:disabled) { background: #d97706; }
 .btn-outline { background: #fff; border-color: #d9dde3; }
 .btn-outline:hover { border-color: #0077ff; color: #0077ff; }
 .btn-sm { padding: 5px 10px; font-size: 13px; border-radius: 7px; }

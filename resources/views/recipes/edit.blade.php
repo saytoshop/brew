@@ -13,6 +13,8 @@
             <div class="actions-row">
                 @if($recipe->id)
                     <a href="{{ route('recipes.show', $recipe->id) }}" class="btn btn-outline">Отмена</a>
+                    <button type="button" form="recipe-form" class="btn btn-amber" onclick="brewRecipe(false)">🔥 Сварить</button>
+                    <button type="button" form="recipe-form" class="btn btn-amber" onclick="brewRecipe(true)">🔥 Сварить + Сохранить</button>
                     <button type="submit" form="recipe-form" class="btn btn-primary">Сохранить</button>
                 @else
                     <a href="{{ route('recipes.index') }}" class="btn btn-outline">Отмена</a>
@@ -59,18 +61,16 @@
             <div class="settings-grid" style="margin-top: 24px; gap: 20px;">
                 <!-- Left Column: Recipe Ingredients -->
                 <div>
-                    <div class="card" style="height: 100%;">
-                        <div class="card-table">
-                            <div class="table-head">
-                                <div class="section-title">Ингредиенты рецепта</div>
+                    <div class="card card-table" style="height: 100%;">
+                        <div class="table-head">
+                            <div class="section-title">Ингредиенты рецепта</div>
+                        </div>
+                        <div style="padding: 0 20px 20px; max-height: 500px; overflow-y: auto;">
+                            <div id="recipe-ingredients-container">
+                                <!-- Категории ингредиентов будут здесь -->
                             </div>
-                            <div style="padding: 0 20px 20px;">
-                                <div id="recipe-ingredients-container">
-                                    <!-- Категории ингредиентов будут здесь -->
-                                </div>
-                                <div id="empty-ingredients-message" class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px;">
-                                    Нет ингредиентов. Кликните на ингредиент справа, чтобы добавить.
-                                </div>
+                            <div id="empty-ingredients-message" class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px; display: none;">
+                                Нет ингредиентов. Кликните на ингредиент справа, чтобы добавить.
                             </div>
                         </div>
                     </div>
@@ -78,43 +78,38 @@
 
                 <!-- Right Column: Stock Ingredients -->
                 <div>
-                    <div class="card" style="height: 100%;">
-                        <div class="card-table">
-                            <div class="table-head">
-                                <div class="section-title">Ингредиенты на складе</div>
-                            </div>
-                            <div style="padding: 0 20px 20px; max-height: 500px; overflow-y: auto;">
-                                @if($stockIngredients->isEmpty())
-                                    <div class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px;">
-                                        Склад пуст или все ингредиенты уже добавлены в рецепт.
-                                    </div>
-                                @else
-                                    @foreach($stockIngredients as $categoryName => $ingredients)
-                                        <div class="ingredient-category" style="margin-bottom: 16px;">
-                                            <div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px;">
-                                                {{ $categoryName }}
-                                            </div>
-                                            <div style="display: flex; flex-direction: column; gap: 4px;">
-                                                @foreach($ingredients as $ingredient)
-                                                    <div class="stock-ingredient-item" 
-                                                         style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background-color 0.15s; border: 1px solid #e7eaee;"
-                                                         onmouseover="this.style.backgroundColor='#f9fafb'"
-                                                         onmouseout="this.style.backgroundColor='transparent'"
-                                                         onclick="addStockIngredient({{ json_encode($ingredient) }})">
-                                                        <div>
-                                                            <strong style="font-size: 13px; color: #1a1a1a;">{{ $ingredient['name'] }}</strong>
-                                                            <div style="font-size: 11px; color: #6b7280; margin-top: 2px;">
-                                                                Доступно: {{ $ingredient['total_quantity'] }} {{ $ingredient['unit_name'] }}
-                                                            </div>
-                                                        </div>
-                                                        <span class="btn btn-sm btn-outline" style="pointer-events: none;">+ Добавить</span>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                    <div class="card card-table" style="height: 100%;">
+                        <div class="table-head">
+                            <div class="section-title">Ингредиенты на складе</div>
+                        </div>
+                        <div style="padding: 0 20px 20px; max-height: 500px; overflow-y: auto;">
+                            @if($stockIngredients->isEmpty())
+                                <div class="text-center text-muted" style="padding: 2rem; color: #6b7280; font-size: 13px;">
+                                    Склад пуст или все ингредиенты уже добавлены в рецепт.
+                                </div>
+                            @else
+                                @foreach($stockIngredients as $categoryName => $ingredients)
+                                    <div class="ingredient-category" style="margin-bottom: 16px;">
+                                        <div style="font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px;">
+                                            {{ $categoryName }}
                                         </div>
-                                    @endforeach
-                                @endif
-                            </div>
+                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                            @foreach($ingredients as $ingredient)
+                                                <div class="stock-ingredient-item" 
+                                                     style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: background-color 0.15s;"
+                                                     onmouseover="this.style.backgroundColor='#f9fafb'"
+                                                     onmouseout="this.style.backgroundColor='transparent'"
+                                                     onclick="addStockIngredient({{ json_encode($ingredient) }})">
+                                                    <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                                                        <strong style="font-size: 13px; color: #1a1a1a;">{{ $ingredient['name'] }}</strong>
+                                                        <span style="font-size: 11px; color: #6b7280;">{{ $ingredient['total_quantity'] }} {{ $ingredient['unit_name'] }}</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -131,6 +126,7 @@
         <script>
             const allIngredients = @json($ingredientsList);
             let ingredients = [];
+            let hasUnsavedChanges = false;
 
             // Инициализация ингредиентов рецепта
             @if($recipeIngredients->isNotEmpty())
@@ -184,7 +180,7 @@
 
                     grouped[categoryName].forEach((item, index) => {
                         const rowDiv = document.createElement('div');
-                        rowDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: 1px solid #e7eaee; background: #fff;';
+                        rowDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #fff;';
                         
                         // Название ингредиента (просто текст)
                         const nameSpan = document.createElement('span');
@@ -196,10 +192,12 @@
                         const qtyInput = document.createElement('input');
                         qtyInput.type = 'number';
                         qtyInput.step = '0.01';
+                        qtyInput.min = '0';
                         qtyInput.name = `ingredients[${index}][quantity]`;
                         qtyInput.value = item.quantity;
                         qtyInput.required = true;
                         qtyInput.style.cssText = 'width: 80px; padding: 6px 8px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px;';
+                        qtyInput.onchange = () => { hasUnsavedChanges = true; };
                         rowDiv.appendChild(qtyInput);
 
                         // Единица измерения (текст)
@@ -208,12 +206,11 @@
                         unitSpan.textContent = item.unit_name;
                         rowDiv.appendChild(unitSpan);
 
-                        // Время добавления
+                        // Время добавления (скрытое поле, по умолчанию 0)
                         const timeInput = document.createElement('input');
-                        timeInput.type = 'number';
+                        timeInput.type = 'hidden';
                         timeInput.name = `ingredients[${index}][add_time]`;
                         timeInput.value = item.add_time_minutes || 0;
-                        timeInput.style.cssText = 'width: 60px; padding: 6px 8px; font-size: 13px; border: 1px solid #d9dde3; border-radius: 6px;';
                         rowDiv.appendChild(timeInput);
 
                         // Скрытые поля
@@ -228,7 +225,7 @@
                         removeBtn.type = 'button';
                         removeBtn.className = 'icon-btn danger';
                         removeBtn.textContent = '×';
-                        removeBtn.onclick = () => removeIngredient(index);
+                        removeBtn.onclick = () => { removeIngredient(index); hasUnsavedChanges = true; };
                         rowDiv.appendChild(removeBtn);
 
                         listDiv.appendChild(rowDiv);
@@ -261,7 +258,67 @@
                     unit_name: stockIng.unit_name,
                     category_name: stockIng.category_name
                 });
+                hasUnsavedChanges = true;
                 renderIngredients();
+            }
+
+            function brewRecipe(saveFirst) {
+                if (!{{ $recipe->id ? 'true' : 'false' }}) {
+                    alert('Сначала создайте рецепт');
+                    return;
+                }
+
+                if (saveFirst && hasUnsavedChanges) {
+                    // Сначала сохраняем изменения, потом варим
+                    document.getElementById('recipe-form').action = "{{ route('recipes.update', $recipe->id) }}";
+                    document.getElementById('recipe-form').submit();
+                    // После сохранения редирект на варку будет обработан сервером
+                    return;
+                }
+
+                // Варим без сохранения (или с уже сохраненными изменениями)
+                const diffData = hasUnsavedChanges ? JSON.stringify({
+                    ingredients: ingredients.map(i => ({
+                        ingredient_id: i.ingredient_id,
+                        ingredient_name: i.ingredient_name,
+                        quantity: i.quantity,
+                        add_time_minutes: i.add_time_minutes
+                    }))
+                }) : null;
+
+                // Отправляем форму на создание варки
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/brews';
+                
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = document.querySelector('meta[name="csrf-token"]').content;
+                form.appendChild(csrf);
+
+                const recipeId = document.createElement('input');
+                recipeId.type = 'hidden';
+                recipeId.name = 'recipe_id';
+                recipeId.value = {{ $recipe->id }};
+                form.appendChild(recipeId);
+
+                if (diffData) {
+                    const isModified = document.createElement('input');
+                    isModified.type = 'hidden';
+                    isModified.name = 'is_modified';
+                    isModified.value = '1';
+                    form.appendChild(isModified);
+
+                    const modifiedDiff = document.createElement('input');
+                    modifiedDiff.type = 'hidden';
+                    modifiedDiff.name = 'modified_diff';
+                    modifiedDiff.value = diffData;
+                    form.appendChild(modifiedDiff);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
             }
 
             // Initialize

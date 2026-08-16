@@ -77,29 +77,37 @@ class BrewController extends Controller
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'recipe_id' => 'nullable|exists:recipes,id',
             'is_modified' => 'boolean',
-            'modified_diff' => 'nullable|array',
+            'modified_diff' => 'nullable|string',
             'ingredients' => 'required_if:is_modified,true|array',
             'ingredients.*.ingredient_id' => 'required|exists:ingredients,id',
             'ingredients.*.quantity' => 'required|numeric|min:0.01',
-            'ingredients.*.add_time_minutes' => 'integer|min:0',
+            'ingredients.*.add_time' => 'integer|min:0',
         ]);
 
         DB::beginTransaction();
         try {
+            // Парсим modified_diff если это строка JSON
+            $modifiedDiff = null;
+            if (!empty($validated['modified_diff']) && is_string($validated['modified_diff'])) {
+                $modifiedDiff = json_decode($validated['modified_diff'], true);
+            } elseif (!empty($validated['modified_diff']) && is_array($validated['modified_diff'])) {
+                $modifiedDiff = $validated['modified_diff'];
+            }
+
             // Создаём запись о варке
             $brew = Brew::create([
                 'recipe_id' => $validated['recipe_id'] ?? null,
-                'is_modified' => $validated['is_modified'] ?? false,
-                'modified_diff' => $validated['modified_diff'] ?? null,
+                'is_modified' => !empty($validated['is_modified']),
+                'modified_diff' => $modifiedDiff,
             ]);
 
             // Определяем состав для списания
-            if ($validated['is_modified'] && !empty($validated['ingredients'])) {
+            if (!empty($validated['is_modified']) && !empty($validated['ingredients'])) {
                 $ingredientsToUse = $validated['ingredients'];
             } else {
                 // Берём из рецепта
@@ -145,9 +153,18 @@ class BrewController extends Controller
             }
 
             DB::commit();
+            
+            // Если запрос от формы - редирект на страницу варки
+            if (!$request->expectsJson()) {
+                return redirect()->route('brews.show', $brew->id)->with('success', 'Варка создана');
+            }
+            
             return response()->json($brew, 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            if (!$request->expectsJson()) {
+                return redirect()->back()->withInput()->withErrors(['error' => $e->getMessage()]);
+            }
             return response()->json(['error' => $e->getMessage()], 422);
         }
     }
