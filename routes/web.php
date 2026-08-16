@@ -19,3 +19,4 @@ Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('r
 Route::get('/brews', [BrewController::class, 'index'])->name('brews.index');
 Route::get('/brews/{brew}', [BrewController::class, 'show'])->name('brews.show');
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::post('/settings/import', [SettingsController::class, 'import'])->name('settings.import');
