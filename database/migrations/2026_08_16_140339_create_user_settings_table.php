@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->decimal('water_brewing_cost', 10, 4)->default(0);
             $table->decimal('water_cleaning_cost', 10, 4)->default(0);
             $table->decimal('electricity_cost', 10, 4)->default(0);
