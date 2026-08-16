@@ -81,5 +81,6 @@ Route::delete('/api/v1/comments/{comment}', [BrewController::class, 'deleteComme
 Route::get('/api/v1/settings', [SettingController::class, 'data']);
 Route::post('/api/v1/settings', [SettingController::class, 'store']);
 Route::put('/api/v1/settings', [SettingController::class, 'update']);
+Route::patch('/api/v1/settings', [SettingController::class, 'updateKeyValue']); // Для обновления настроек из Vue компонента (ключ-значение)
 Route::post('/api/v1/settings/export-db', [SettingController::class, 'exportDb']);
 Route::post('/api/v1/settings/import-db', [SettingController::class, 'importDb']);

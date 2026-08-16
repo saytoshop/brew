@@ -1,218 +1,86 @@
-# Laravel-specific ignores
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+node_modules/
 vendor/
 composer.lock
+*.lock
 .env
 .env.local
 .env.*
-!.env.example
 
-# Build and cache directories
-bootstrap/cache/
-storage/framework/cache/
-storage/framework/sessions/
-storage/framework/views/
-storage/logs/
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
 
-# IDE
+# Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
 
-# Temporary files
-*.tmp
-*.temp
+# PHP specific
+*.phar
+.php_cs.cache
 
-# Dependency directories
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Laravel specific (if applicable)
+storage/
+bootstrap/cache/
 
-# Compiled files
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.dll
-*.dylib
-*.exe
-*.out
+# Build directories
+target/
+.gradle/
+.npm/
+.yarn/
 
-# Python specific
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
+# Python virtual environments
 venv/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/
-.mypy_cache/
-.pytest_cache/
-.hypothesis/
+.env/
 
-# Ruby specific
-*.gem
-*.rbc
-.bundle
-.config
-.yardoc
-_yardoc
-doc/
-.rspec
-Guardfile
-.rvmrc
-.capistrano
-.sass-cache
-.rbx
-/*.log
-.sqlite3
-.sqlite3-journal
-.rakeTasks
-~*
-*.bin
-vendor/bundle
-.rbenv-vars
-.depend
-.DS_Store
-ehthumbs.db
-Icon?
-Thumbs.db
-.travis.yml
-appveyor.yml
-circle.yml
-.codeclimate.yml
-.coveralls.yml
-.reek
-.rubocop.yml
-.rubocop_todo.yml
-.overcommit.yml
-.bundler-audit.yml
-.snyk
-.codeship
-.semaphore
-.shunit2
-.vagrant
-.bundle/
-Gemfile.lock
-Gemfile~
-*.lock
-.ruby-version
-.ruby-gemset
-.bundle
-jruby.gemspec
-lib/bundler/man/
-coverage/
-*.tmb
-*.orig
-.rbi
-.rb.implementation
-.rbenv-gemsets
-.rbenv-hooks
-.rbenv-version
-.rbenv-default-gems
-.rbenv-migrate
-.rbenv-use
-.rbenv-exec
-.rbenv-shell
-.rbenv-rehash
-.rbenv-completion
-.rbenv-vars.d/
-.rbenv-aliases
-.rbenv-deferred
-.rbenv-hooks.d/
-.rbenv-shims
-.rbenv.d/
-.rbenv.d/*
-.rbenv.d/**
-.rbenv.d/**/*
-.rbenv.d/**/**
-.rbenv.d/**/**/*
-.rbenv.d/**/**/**
-.rbenv.d/**/**/**/*
-.rbenv.d/**/**/**/**
-.rbenv.d/**/**/**/**/*
-.rbenv.d/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/*
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**/**/**
-.rbenv.d/**/**/**/**......
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst

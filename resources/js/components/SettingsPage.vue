@@ -120,7 +120,17 @@ onMounted(async () => {
         const response = await fetch('/api/v1/settings');
         if (response.ok) {
             const data = await response.json();
-            Object.assign(settings, data);
+            // Обновляем только существующие ключи в settings
+            Object.keys(settings).forEach(key => {
+                if (data[key] !== undefined) {
+                    // Преобразуем булевы значения
+                    if (key.includes('include') || key.includes('show')) {
+                        settings[key] = data[key] === 'true';
+                    } else {
+                        settings[key] = parseFloat(data[key]) || 0;
+                    }
+                }
+            });
         }
     } catch (e) {
         console.error('Ошибка загрузки настроек', e);
@@ -130,13 +140,28 @@ onMounted(async () => {
 const saveSettings = async () => {
     loading.value = true;
     try {
-        const response = await fetch('/api/settings', {
-            method: 'POST',
+        // Формируем данные в формате ключ-значение, который ожидает API
+        const settingsData = {
+            water_brewing_cost: String(settings.water_brewing_cost),
+            water_cleaning_cost: String(settings.water_cleaning_cost),
+            electricity_cost: String(settings.electricity_cost),
+            co2_cost: String(settings.co2_cost),
+            hourly_rate: String(settings.hourly_rate),
+            fuel_consumption: String(settings.fuel_consumption),
+            fuel_cost: String(settings.fuel_cost),
+            include_fuel_in_costs: String(settings.include_fuel_in_costs),
+            include_depreciation_in_costs: String(settings.include_depreciation_in_costs),
+            show_zero_stock_ingredients: String(settings.show_zero_stock_ingredients),
+            show_existing_recipe_ingredients: String(settings.show_existing_recipe_ingredients),
+        };
+
+        const response = await fetch('/api/v1/settings', {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify(settings)
+            body: JSON.stringify(settingsData)
         });
 
         if (response.ok) {

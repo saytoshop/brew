@@ -18,7 +18,10 @@ class SettingController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json(Setting::all(['id', 'key', 'value']));
+        $settings = Setting::all(['key', 'value'])->pluck('value', 'key');
+        
+        // Возвращаем настройки в формате ключ-значение для удобного использования в Vue
+        return response()->json($settings);
     }
 
     public function update(Request $request): JsonResponse
@@ -31,6 +34,22 @@ class SettingController extends Controller
 
         foreach ($validated as $item) {
             Setting::updateOrCreate(['key' => $item['key']], ['value' => $item['value']]);
+        }
+
+        return response()->json(['message' => 'Настройки сохранены']);
+    }
+
+    /**
+     * Обновление настроек в формате ключ-значение (для Vue компонента)
+     */
+    public function updateKeyValue(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            '*' => 'string|nullable',
+        ]);
+
+        foreach ($validated as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
         return response()->json(['message' => 'Настройки сохранены']);
