@@ -163,7 +163,7 @@ const uploadFile = async () => {
 
         if (response.ok) {
             importSuccess.value = true;
-            importMessage.value = `Успешно! Импортировано: ${result.imported}`;
+            importMessage.value = `Успешно! Импортировано записей: ${result.imported}`;
             setTimeout(() => window.location.reload(), 2000);
         } else {
             importSuccess.value = false;
