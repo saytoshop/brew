@@ -12,7 +12,10 @@ class RecipeController extends Controller
 {
     public function index()
     {
-        return view('recipes.index');
+        $recipes = Recipe::withCount('brews')->with(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('recipes.index', compact('recipes'));
     }
 
     public function create()
@@ -22,11 +25,16 @@ class RecipeController extends Controller
 
     public function show(Recipe $recipe)
     {
-        return view('recipes.show', compact('recipe'));
+        $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
+        $groupedIngredients = $recipe->recipeIngredients && $recipe->recipeIngredients->count() > 0 
+            ? $recipe->recipeIngredients->groupBy('ingredient.category.name')
+            : collect();
+        return view('recipes.show', compact('recipe', 'groupedIngredients'));
     }
 
     public function edit(Recipe $recipe)
     {
+        $recipe->load(['recipeIngredients.ingredient.category', 'recipeIngredients.ingredient.unit']);
         return view('recipes.edit', compact('recipe'));
     }
 
