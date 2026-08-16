@@ -61,8 +61,8 @@ Route::get('/v1/stock/forecast', [StockController::class, 'forecast']);
 // Recipes
 Route::get('/v1/recipes', [RecipeController::class, 'data']);
 Route::get('/v1/recipes/{recipe}', [RecipeController::class, 'showData']);
-Route::post('/v1/recipes', [RecipeController::class, 'store']);
-Route::put('/v1/recipes/{recipe}', [RecipeController::class, 'update']);
+Route::post('/v1/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+Route::put('/v1/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
 Route::delete('/v1/recipes/{recipe}', [RecipeController::class, 'destroy']);
 
 // Brews
