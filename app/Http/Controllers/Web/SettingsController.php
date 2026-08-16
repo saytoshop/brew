@@ -107,9 +107,6 @@ class SettingsController extends Controller
             // Импорт использованных ингредиентов в варках (из inventory_transactions)
             $imported['brew_ingredients'] = $this->importBrewIngredientsFromSqlite($sourceDb);
 
-            // Импорт настроек пользователя
-            $imported['settings'] = $this->importUserSettingsFromSqlite($sourceDb);
-
             DB::commit();
             $sourceDb->close();
             
@@ -452,46 +449,6 @@ class SettingsController extends Controller
                 'updated_at' => $row['updated_at'] ? now()->parse($row['updated_at']) : now(),
             ]);
             $count++;
-        }
-        
-        return $count;
-    }
-
-    private function importUserSettingsFromSqlite(\SQLite3 $sourceDb): int
-    {
-        $result = $sourceDb->query('SELECT * FROM user_settings LIMIT 1');
-        $row = $result->fetchArray(SQLITE3_ASSOC);
-        
-        if (!$row) {
-            return 0;
-        }
-        
-        $count = 0;
-        $settingsMap = [
-            'water_brewing_cost' => 'water_brewing_cost',
-            'water_cleaning_cost' => 'water_cleaning_cost',
-            'electricity_cost' => 'electricity_cost',
-            'co2_cost' => 'co2_cost',
-            'hourly_rate' => 'hourly_rate',
-            'fuel_consumption' => 'fuel_consumption',
-            'fuel_cost' => 'fuel_cost',
-            'include_fuel_in_costs' => 'include_fuel_in_costs',
-            'include_depreciation_in_costs' => 'include_depreciation_in_costs',
-            'equipment_volume' => 'equipment_volume',
-            'max_power' => 'max_power',
-            'water_cost_per_cubic_meter' => 'water_cost_per_cubic_meter',
-            'gas_cost_per_cubic_meter' => 'gas_cost_per_cubic_meter',
-            'osmosis_water_cost' => 'osmosis_water_cost',
-        ];
-        
-        foreach ($settingsMap as $sourceKey => $targetKey) {
-            if (isset($row[$sourceKey])) {
-                DB::table('settings')->updateOrInsert(
-                    ['key' => $targetKey],
-                    ['value' => (string) $row[$sourceKey]]
-                );
-                $count++;
-            }
         }
         
         return $count;
