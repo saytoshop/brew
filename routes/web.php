@@ -26,57 +26,57 @@ Route::post('/settings/import', [SettingController::class, 'import'])->name('set
 
 // API routes (JSON responses for Vue components)
 // Categories
-Route::get('/v1/categories', [CategoryController::class, 'data']);
-Route::get('/v1/categories/{category}', [CategoryController::class, 'showData']);
-Route::post('/v1/categories', [CategoryController::class, 'store']);
-Route::put('/v1/categories/{category}', [CategoryController::class, 'update']);
-Route::delete('/v1/categories/{category}', [CategoryController::class, 'destroy']);
+Route::get('/api/v1/categories', [CategoryController::class, 'data']);
+Route::get('/api/v1/categories/{category}', [CategoryController::class, 'showData']);
+Route::post('/api/v1/categories', [CategoryController::class, 'store']);
+Route::put('/api/v1/categories/{category}', [CategoryController::class, 'update']);
+Route::delete('/api/v1/categories/{category}', [CategoryController::class, 'destroy']);
 
 // Units
-Route::get('/v1/units', [UnitController::class, 'data']);
-Route::get('/v1/units/{unit}', [UnitController::class, 'showData']);
-Route::post('/v1/units', [UnitController::class, 'store']);
-Route::put('/v1/units/{unit}', [UnitController::class, 'update']);
-Route::delete('/v1/units/{unit}', [UnitController::class, 'destroy']);
+Route::get('/api/v1/units', [UnitController::class, 'data']);
+Route::get('/api/v1/units/{unit}', [UnitController::class, 'showData']);
+Route::post('/api/v1/units', [UnitController::class, 'store']);
+Route::put('/api/v1/units/{unit}', [UnitController::class, 'update']);
+Route::delete('/api/v1/units/{unit}', [UnitController::class, 'destroy']);
 
 // Ingredients
-Route::get('/v1/ingredients', [IngredientController::class, 'data']);
-Route::get('/v1/ingredients/{ingredient}', [IngredientController::class, 'showData']);
-Route::post('/v1/ingredients', [IngredientController::class, 'store']);
-Route::put('/v1/ingredients/{ingredient}', [IngredientController::class, 'update']);
-Route::delete('/v1/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
+Route::get('/api/v1/ingredients', [IngredientController::class, 'data']);
+Route::get('/api/v1/ingredients/{ingredient}', [IngredientController::class, 'showData']);
+Route::post('/api/v1/ingredients', [IngredientController::class, 'store']);
+Route::put('/api/v1/ingredients/{ingredient}', [IngredientController::class, 'update']);
+Route::delete('/api/v1/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
 
 // Equipment
-Route::get('/v1/equipment', [EquipmentController::class, 'data']);
-Route::get('/v1/equipment/{equipment}', [EquipmentController::class, 'show']);
-Route::post('/v1/equipment', [EquipmentController::class, 'store']);
-Route::put('/v1/equipment/{equipment}', [EquipmentController::class, 'update']);
-Route::delete('/v1/equipment/{equipment}', [EquipmentController::class, 'destroy']);
+Route::get('/api/v1/equipment', [EquipmentController::class, 'data']);
+Route::get('/api/v1/equipment/{equipment}', [EquipmentController::class, 'show']);
+Route::post('/api/v1/equipment', [EquipmentController::class, 'store']);
+Route::put('/api/v1/equipment/{equipment}', [EquipmentController::class, 'update']);
+Route::delete('/api/v1/equipment/{equipment}', [EquipmentController::class, 'destroy']);
 
 // Stock
-Route::get('/v1/stock', [StockController::class, 'data']);
-Route::post('/v1/stock/receipts', [StockController::class, 'receipt']);
-Route::get('/v1/stock/forecast', [StockController::class, 'forecast']);
+Route::get('/api/v1/stock', [StockController::class, 'data']);
+Route::post('/api/v1/stock/receipts', [StockController::class, 'receipt']);
+Route::get('/api/v1/stock/forecast', [StockController::class, 'forecast']);
 
 // Recipes
-Route::get('/v1/recipes', [RecipeController::class, 'data']);
-Route::get('/v1/recipes/{recipe}', [RecipeController::class, 'showData']);
-Route::post('/v1/recipes', [RecipeController::class, 'store']);
-Route::put('/v1/recipes/{recipe}', [RecipeController::class, 'update']);
-Route::delete('/v1/recipes/{recipe}', [RecipeController::class, 'destroy']);
+Route::get('/api/v1/recipes', [RecipeController::class, 'data']);
+Route::get('/api/v1/recipes/{recipe}', [RecipeController::class, 'showData']);
+Route::post('/api/v1/recipes', [RecipeController::class, 'store']);
+Route::put('/api/v1/recipes/{recipe}', [RecipeController::class, 'update']);
+Route::delete('/api/v1/recipes/{recipe}', [RecipeController::class, 'destroy']);
 
 // Brews
-Route::get('/v1/brews', [BrewController::class, 'data']);
-Route::get('/v1/brews/{brew}', [BrewController::class, 'showData']);
-Route::post('/v1/brews', [BrewController::class, 'store']);
-Route::put('/v1/brews/{brew}/complete', [BrewController::class, 'complete']);
-Route::get('/v1/brews/{brew}/comments', [BrewController::class, 'comments']);
-Route::post('/v1/brews/{brew}/comments', [BrewController::class, 'addComment']);
-Route::put('/v1/comments/{comment}', [BrewController::class, 'updateComment']);
-Route::delete('/v1/comments/{comment}', [BrewController::class, 'deleteComment']);
+Route::get('/api/v1/brews', [BrewController::class, 'data']);
+Route::get('/api/v1/brews/{brew}', [BrewController::class, 'showData']);
+Route::post('/api/v1/brews', [BrewController::class, 'store']);
+Route::put('/api/v1/brews/{brew}/complete', [BrewController::class, 'complete']);
+Route::get('/api/v1/brews/{brew}/comments', [BrewController::class, 'comments']);
+Route::post('/api/v1/brews/{brew}/comments', [BrewController::class, 'addComment']);
+Route::put('/api/v1/comments/{comment}', [BrewController::class, 'updateComment']);
+Route::delete('/api/v1/comments/{comment}', [BrewController::class, 'deleteComment']);
 
 // Settings
-Route::get('/v1/settings', [SettingController::class, 'index']);
-Route::put('/v1/settings', [SettingController::class, 'update']);
-Route::post('/v1/settings/export-db', [SettingController::class, 'exportDb']);
-Route::post('/v1/settings/import-db', [SettingController::class, 'importDb']);
+Route::get('/api/v1/settings', [SettingController::class, 'index']);
+Route::put('/api/v1/settings', [SettingController::class, 'update']);
+Route::post('/api/v1/settings/export-db', [SettingController::class, 'exportDb']);
+Route::post('/api/v1/settings/import-db', [SettingController::class, 'importDb']);
