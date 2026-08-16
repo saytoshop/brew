@@ -8,7 +8,12 @@ use Illuminate\Http\JsonResponse;
 
 class EquipmentController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('equipment.index');
+    }
+
+    public function data(): JsonResponse
     {
         return response()->json(Equipment::orderBy('created_at', 'desc')->get());
     }

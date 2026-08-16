@@ -8,12 +8,17 @@ use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('categories.index');
+    }
+
+    public function data(): JsonResponse
     {
         return response()->json(Category::orderBy('name')->get());
     }
 
-    public function show(Category $category): JsonResponse
+    public function showData(Category $category): JsonResponse
     {
         return response()->json($category);
     }

@@ -13,7 +13,17 @@ use Illuminate\Support\Facades\DB;
 
 class BrewController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
+    {
+        return view('brews.index');
+    }
+
+    public function show(Brew $brew)
+    {
+        return view('brews.show', compact('brew'));
+    }
+
+    public function data(): JsonResponse
     {
         $brews = Brew::with('recipe')->orderBy('created_at', 'desc')->get()->map(function ($brew) {
             return [
@@ -30,7 +40,7 @@ class BrewController extends Controller
         return response()->json($brews);
     }
 
-    public function show(Brew $brew): JsonResponse
+    public function showData(Brew $brew): JsonResponse
     {
         $brew->load(['recipe', 'brewIngredients.ingredient.category', 'brewComments']);
         
