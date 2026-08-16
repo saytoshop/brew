@@ -1,50 +1,28 @@
-# Dependencies
-node_modules/
-
-# Build artifacts
-dist/
-build/
-
-# Editor/IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# Logs
-*.log
+```php
+# Laravel-specific ignores
+/bootstrap/cache/
+/storage/logs/
+/storage/framework/
+/vendor/
 
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Compiled
-*.o
-*.obj
-*.so
-*.a
-*.dll
-*.exe
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# System
+# OS
 .DS_Store
 Thumbs.db
 
-# Cache
-.mypy_cache/
-.pytest_cache/
-.gradle/
-target/
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+```
