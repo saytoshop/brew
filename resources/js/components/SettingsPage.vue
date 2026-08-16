@@ -103,7 +103,7 @@ const settings = reactive({
 // Загрузка текущих настроек
 onMounted(async () => {
     try {
-        const response = await fetch('/api/settings');
+        const response = await fetch('/api/v1/settings');
         if (response.ok) {
             const data = await response.json();
             Object.assign(settings, data);

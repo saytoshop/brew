@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\BrewController;
 use App\Http\Controllers\Api\SettingController;
 
 // API v1 routes
-Route::prefix('api/v1')->group(function () {
+Route::prefix('v1')->group(function () {
     // Справочники
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('units', UnitController::class);
